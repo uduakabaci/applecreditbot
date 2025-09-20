@@ -1,5 +1,7 @@
-import { Bot, Context, session, SessionFlavor } from 'grammy';
-import { conversations, createConversation, ConversationFlavor } from '@grammyjs/conversations';
+import { Bot, Context, session } from 'grammy';
+import type { SessionFlavor } from 'grammy';
+import { conversations, createConversation } from '@grammyjs/conversations';
+import type { ConversationFlavor } from '@grammyjs/conversations';
 import { environment } from 'core/libs/environment';
 import { orderConversation } from './conversation';
 

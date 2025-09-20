@@ -84,12 +84,13 @@ export async function orderConversation(conversation: MyConversation, ctx: MyCon
 
   // Purchase instructions
   const instructions = `How to make purchases:
-Open App Store → Click your profile (top right) →
-Click 'Send Gift Card by Email' →
-Fill 'To:' with recipient email →
-Add price in 'Other' →
-Click Next → Select theme →
-Click 'Buy' (top right) → Proceed 'Buy Now'.`;
+    Open App Store → Click your profile (top right) →
+    Click 'Send Gift Card by Email' →
+    Fill 'To:' with recipient email →
+    Add price in 'Other' →
+    Click Next → Select theme →
+    Click 'Buy' (top right) → Proceed 'Buy Now'.
+  `;
 
   await ctx.reply(instructions);
 
@@ -100,7 +101,8 @@ Click 'Buy' (top right) → Proceed 'Buy Now'.`;
       telegramUserId: user.id,
       telegramUsername: user.username,
       firstName: user.first_name,
-      lastName: user.last_name,
+      lastName:
+        user.last_name || state?.fullName?.split(' ').slice(1).join('') || '',
       device: state.device as any,
       country: state.country!,
       icloudEmail: state.icloudEmail!,
@@ -110,7 +112,7 @@ Click 'Buy' (top right) → Proceed 'Buy Now'.`;
 
     const validatedData = createOrderSchema.parse(orderData);
     const savedOrder = await orderDAL.createOrder(validatedData);
-    
+
     console.log('Order saved to database:', savedOrder.id);
     await ctx.reply(`Your order has been submitted successfully! Order ID: ${savedOrder.id}`);
 

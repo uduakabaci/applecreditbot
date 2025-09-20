@@ -8,8 +8,7 @@
     "db:migrate": "dotenv -- bun --cwd packages/core migrate",
     "db:generate": "dotenv -- bun --cwd packages/core generate",
     "db:studio": "bunx dotenv -- bun --cwd packages/core studio",
-    "web:dev": "bun --cwd apps/web run dev",
-    "bot:dev": "bun --cwd apps/bot run dev"
+    "bot:dev": "bunx dotenv -- bun --cwd apps/bot dev"
   },
   "dependencies": {
     "dotenv-cli": "^7.4.2",
