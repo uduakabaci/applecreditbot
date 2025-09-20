@@ -55,21 +55,24 @@ function OrderRow({ order, onStatusUpdate, onDelete }: OrderRowProps) {
     }
   };
 
+  const handleChatWithUser = () => {
+    const telegramUrl = order.telegramUsername
+      ? `https://t.me/${order.telegramUsername.replace('@', '')}`
+      : `https://t.me/${order.telegramUserId}`;
+
+    window.open(telegramUrl, '_blank');
+  };
+
   return (
     <tr className="hover:bg-gray-50">
       <td className="p-4">
         <div className="flex items-center gap-3">
-          <input type="checkbox" className="rounded" />
+          {/* <input type="checkbox" className="rounded" /> */}
           <div>
             <p className="font-medium text-gray-900">{order.fullName}</p>
             <p className="text-sm text-gray-500">{order.telegramUsername || `User ${order.telegramUserId}`}</p>
           </div>
         </div>
-      </td>
-      <td className="p-4">
-        <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded">
-          TELEGRAM
-        </span>
       </td>
       <td className="p-4">
         <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded ${getStatusColor(order.status)}`}>
@@ -99,24 +102,33 @@ function OrderRow({ order, onStatusUpdate, onDelete }: OrderRowProps) {
           </button>
           <div className="absolute right-0 top-full mt-1 w-48 bg-white border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
             <div className="py-1">
-              <div className="px-4 py-2 text-xs text-gray-500 font-medium">
-                Update Status
-              </div>
-              <div className="px-4 py-1">
-                <select 
-                  className="w-full text-xs border rounded px-2 py-1 text-gray-500" 
-                  defaultValue={order.status}
-                  onChange={handleStatusChange}
-                  disabled={isUpdating}
-                >
-                  <option value="new">New</option>
-                  <option value="in_review">In Review</option>
-                  <option value="approved">Approved</option>
-                  <option value="rejected">Rejected</option>
-                </select>
+              <button
+                onClick={handleChatWithUser}
+                className="w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 flex items-center gap-2"
+              >
+                <span>💬</span>
+                <span>Chat with User</span>
+              </button>
+              <div className="border-t">
+                <div className="px-4 py-2 text-xs text-gray-500 font-medium">
+                  Update Status
+                </div>
+                <div className="px-4 py-1">
+                  <select
+                    className="w-full text-xs border rounded px-2 py-1 text-gray-500"
+                    defaultValue={order.status}
+                    onChange={handleStatusChange}
+                    disabled={isUpdating}
+                  >
+                    <option value="new">New</option>
+                    <option value="in_review">In Review</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </div>
               </div>
               <div className="border-t">
-                <button 
+                <button
                   onClick={handleDelete}
                   disabled={isDeleting}
                   className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 disabled:opacity-50"
@@ -154,7 +166,6 @@ export function OrdersTable({ orders }: OrdersTableProps) {
       <thead>
         <tr className="bg-gray-50 border-b text-xs font-medium text-gray-500 uppercase">
           <th className="text-left p-4">ORDER</th>
-          <th className="text-left p-4">SOURCE</th>
           <th className="text-left p-4">STATUS</th>
           <th className="text-left p-4">DEVICE</th>
           <th className="text-left p-4">COUNTRY</th>
@@ -166,9 +177,9 @@ export function OrdersTable({ orders }: OrdersTableProps) {
       </thead>
       <tbody className="divide-y">
         {orders.map((order) => (
-          <OrderRow 
-            key={order.id} 
-            order={order} 
+          <OrderRow
+            key={order.id}
+            order={order}
             onStatusUpdate={handleStatusUpdate}
             onDelete={handleDelete}
           />

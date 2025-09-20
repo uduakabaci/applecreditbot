@@ -13,9 +13,9 @@ export async function getOrders(): Promise<Order[]> {
   }
 }
 
-export async function getOrdersPaginated(page: number = 1, limit: number = 10): Promise<{ orders: Order[], total: number }> {
+export async function getOrdersPaginated(page: number = 1, limit: number = 10, search?: string): Promise<{ orders: Order[], total: number }> {
   try {
-    return await orderDAL.getOrdersPaginated(page, limit);
+    return await orderDAL.getOrdersPaginated(page, limit, search);
   } catch (error) {
     console.error('Failed to fetch paginated orders:', error);
     return { orders: [], total: 0 };

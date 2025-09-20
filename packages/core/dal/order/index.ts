@@ -1,4 +1,4 @@
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, or, like, sql } from 'drizzle-orm';
 import { db } from '../index';
 import { orders, type Order, type NewOrder } from './order.sql';
 import type { CreateOrderRequest, UpdateOrderRequest } from '../../types';
@@ -32,15 +32,26 @@ export class OrderDAL {
     return db.select().from(orders).orderBy(desc(orders.createdAt));
   }
 
-  async getOrdersPaginated(page: number = 1, limit: number = 10): Promise<{ orders: Order[], total: number }> {
+  async getOrdersPaginated(page: number = 1, limit: number = 10, search?: string): Promise<{ orders: Order[], total: number }> {
     const offset = (page - 1) * limit;
 
+    const searchCondition = search && search.trim()
+      ? or(
+        like(sql`lower(${orders.id})`, `%${search.toLowerCase()}%`),
+        like(sql`lower(${orders.icloudEmail})`, `%${search.toLowerCase()}%`)
+      )
+      : undefined;
+
+    const baseQuery = db.select().from(orders);
+    const baseCountQuery = db.select({ count: orders.id }).from(orders);
+
     const [ordersData, totalCount] = await Promise.all([
-      db.select().from(orders)
-        .orderBy(desc(orders.createdAt))
-        .limit(limit)
-        .offset(offset),
-      db.select({ count: orders.id }).from(orders).then(result => result.length)
+      searchCondition
+        ? baseQuery.where(searchCondition).orderBy(desc(orders.createdAt)).limit(limit).offset(offset)
+        : baseQuery.orderBy(desc(orders.createdAt)).limit(limit).offset(offset),
+      searchCondition
+        ? baseCountQuery.where(searchCondition).then(result => result.length)
+        : baseCountQuery.then(result => result.length)
     ]);
 
     return {

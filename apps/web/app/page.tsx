@@ -1,16 +1,18 @@
 import { getOrdersPaginated } from '../actions/orders';
-import { SearchIcon } from '../components/icons/search';
 import { OrdersTable } from '../components/OrdersTable';
+import { SearchInput } from '../components/SearchInput';
 
 export default async function OrdersDashboard({
   searchParams
 }: {
-  searchParams: { page?: string }
+  searchParams: Promise<{ page?: string; search?: string }>
 }) {
-  const page = Number(searchParams.page) || 1;
+  const resolvedSearchParams = await searchParams;
+  const page = Number(resolvedSearchParams.page) || 1;
+  const search = resolvedSearchParams.search || '';
   const limit = 10;
 
-  const { orders, total } = await getOrdersPaginated(page, limit);
+  const { orders, total } = await getOrdersPaginated(page, limit, search);
 
   const totalPages = Math.ceil(total / limit);
   const stats = {
@@ -57,14 +59,7 @@ export default async function OrdersDashboard({
           <div className="p-4 border-b">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="relative">
-                  <SearchIcon className="w-[24px] absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="text-black pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                <SearchInput defaultValue={search} />
               </div>
             </div>
           </div>
@@ -80,7 +75,7 @@ export default async function OrdersDashboard({
             <div className="flex items-center gap-2">
               {page > 1 && (
                 <a
-                  href={`?page=${page - 1}`}
+                  href={`?page=${page - 1}${search ? `&search=${encodeURIComponent(search)}` : ''}`}
                   className="px-3 py-1 text-sm border rounded hover:bg-gray-50"
                 >
                   Previous
@@ -94,7 +89,7 @@ export default async function OrdersDashboard({
                 return (
                   <a
                     key={pageNum}
-                    href={`?page=${pageNum}`}
+                    href={`?page=${pageNum}${search ? `&search=${encodeURIComponent(search)}` : ''}`}
                     className={`px-3 py-1 text-sm border rounded ${pageNum === page
                       ? 'bg-blue-500 text-white border-blue-500'
                       : 'hover:bg-gray-50'
@@ -107,7 +102,7 @@ export default async function OrdersDashboard({
 
               {page < totalPages && (
                 <a
-                  href={`?page=${page + 1}`}
+                  href={`?page=${page + 1}${search ? `&search=${encodeURIComponent(search)}` : ''}`}
                   className="px-3 py-1 text-sm border rounded hover:bg-gray-50"
                 >
                   Next
