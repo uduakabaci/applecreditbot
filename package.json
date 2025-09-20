@@ -1,0 +1,24 @@
+{
+  "name": "applecreditbot",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "db:migrate": "dotenv -- bun --cwd packages/core migrate",
+    "db:generate": "dotenv -- bun --cwd packages/core generate",
+    "db:studio": "bunx dotenv -- bun --cwd packages/core studio",
+    "web:dev": "bun --cwd apps/web run dev",
+    "bot:dev": "bun --cwd apps/bot run dev"
+  },
+  "dependencies": {
+    "dotenv-cli": "^7.4.2",
+    "fast-xml-parser": "^5.2.5"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

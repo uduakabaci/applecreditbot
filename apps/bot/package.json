@@ -1,0 +1,18 @@
+{
+  "name": "bot", 
+  "scripts": {
+    "dev": "bun run --watch index.ts",
+    "start": "bun run index.ts"
+  },
+  "dependencies": {
+    "core": "workspace:^",
+    "grammy": "^1.28.0",
+    "@grammyjs/conversations": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
