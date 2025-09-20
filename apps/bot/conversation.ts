@@ -89,18 +89,18 @@ export async function orderConversation(conversation: MyConversation, ctx: MyCon
   const groupText = groupResponse.message?.text?.toLowerCase();
   state.consentGroupInvite = groupText?.includes('yes') || groupText?.includes('y') || false;
 
-  // Purchase instructions
-  const instructions = `How to make purchases:
-    Open App Store → Click your profile (top right) →
-    Click 'Send Gift Card by Email' →
-    Fill 'To:' with recipient email →
-    Add price in 'Other' →
-    Click Next → Select theme →
-    Click 'Buy' (top right) → Proceed 'Buy Now'.
-  `;
-
-  await ctx.reply(instructions);
-
+  // // Purchase instructions
+  // const instructions = `How to make purchases:
+  //   Open App Store → Click your profile (top right) →
+  //   Click 'Send Gift Card by Email' →
+  //   Fill 'To:' with recipient email →
+  //   Add price in 'Other' →
+  //   Click Next → Select theme →
+  //   Click 'Buy' (top right) → Proceed 'Buy Now'.
+  // `;
+  //
+  // await ctx.reply(instructions);
+  //
   // Create order
   try {
     const orderData: CreateOrderInput = {
