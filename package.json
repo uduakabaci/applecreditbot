@@ -11,6 +11,7 @@
     "bot:dev": "bunx dotenv -- bun --cwd apps/bot dev",
     "bot:start": "bunx dotenv -- bun --cwd apps/bot start",
     "web:dev": "bunx dotenv -- bun --cwd apps/web dev",
+    "web:build": "bunx dotenv -- bun --cwd apps/web build",
     "web:start": "bunx dotenv -- bun --cwd apps/web start"
   },
   "dependencies": {
