@@ -56,10 +56,24 @@ export async function orderConversation(conversation: MyConversation, ctx: MyCon
   const countryResponse = await conversation.wait();
   state.country = countryResponse.message?.text || '';
 
-  // Ask iCloud email
+  // Ask iCloud email with validation
   await ctx.reply("Your iCloud email address?");
-  const emailResponse = await conversation.wait();
-  state.icloudEmail = emailResponse.message?.text || '';
+
+  let emailValidated = false;
+  while (!emailValidated) {
+    const emailResponse = await conversation.wait();
+    const email = emailResponse.message?.text?.trim() || '';
+
+    // Simple email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (emailRegex.test(email)) {
+      state.icloudEmail = email;
+      emailValidated = true;
+    } else {
+      await ctx.reply("❌ Please provide a valid email address (e.g., jose@gmail.com):");
+    }
+  }
 
   // Ask name
   await ctx.reply("First name and last name?");
@@ -68,13 +82,6 @@ export async function orderConversation(conversation: MyConversation, ctx: MyCon
 
   // Acknowledge
   await ctx.reply("Thanks. Be right back. A notification would be sent to you, click 'Confirm'.");
-
-  // 24-hour process message
-  await ctx.reply(`Alright ${user.first_name}, I have created a 24 hours process which means the issue should be solved in 24 hours. Please don't try to make other purchases since it might interrupt or cancel the process I've created. If the issue persists, please write us back to escalate again.`);
-
-  // Check clarity
-  await ctx.reply("Is the path to follow clear? Or is there any other information I can help you with from here?");
-  await conversation.wait(); // Wait for user response
 
   // Group invitation
   await ctx.reply("Would you like to be added to a group where we share opportunities on how to earn profits from making purchases on Apple Store?");
