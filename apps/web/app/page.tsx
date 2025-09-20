@@ -1,0 +1,123 @@
+import { getOrdersPaginated } from '../actions/orders';
+import { SearchIcon } from '../components/icons/search';
+import { OrdersTable } from '../components/OrdersTable';
+
+export default async function OrdersDashboard({
+  searchParams
+}: {
+  searchParams: { page?: string }
+}) {
+  const page = Number(searchParams.page) || 1;
+  const limit = 10;
+
+  const { orders, total } = await getOrdersPaginated(page, limit);
+
+  const totalPages = Math.ceil(total / limit);
+  const stats = {
+    new: orders.filter(o => o.status === 'new').length,
+    approved: orders.filter(o => o.status === 'approved').length,
+    rejected: orders.filter(o => o.status === 'rejected').length,
+    total: total
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-4 gap-6 mt-[50px] mb-8">
+          <div className="bg-white p-6 rounded-lg border">
+            <div>
+              <p className="text-sm text-gray-500">New</p>
+              <p className="text-2xl font-semibold text-gray-600">{stats.new}</p>
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-lg border">
+            <div>
+              <p className="text-sm text-gray-500">Approved</p>
+              <p className="text-2xl font-semibold text-gray-600">{stats.approved}</p>
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-lg border">
+            <div>
+              <p className="text-sm text-gray-500">Rejected</p>
+              <p className="text-2xl font-semibold text-gray-600">{stats.rejected}</p>
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-lg border">
+            <div>
+              <p className="text-sm text-gray-500">Total orders</p>
+              <p className="text-2xl font-semibold text-gray-600">{stats.total}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="bg-white rounded-lg border mb-6">
+          <div className="p-4 border-b">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <SearchIcon className="w-[24px] absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="text-black pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Table */}
+          <OrdersTable orders={orders} />
+
+          {/* Pagination */}
+          <div className="px-4 py-3 border-t flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, total)} of {total} results
+            </div>
+            <div className="flex items-center gap-2">
+              {page > 1 && (
+                <a
+                  href={`?page=${page - 1}`}
+                  className="px-3 py-1 text-sm border rounded hover:bg-gray-50"
+                >
+                  Previous
+                </a>
+              )}
+
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const pageNum = Math.max(1, Math.min(totalPages - 4, page - 2)) + i;
+                if (pageNum > totalPages) return null;
+
+                return (
+                  <a
+                    key={pageNum}
+                    href={`?page=${pageNum}`}
+                    className={`px-3 py-1 text-sm border rounded ${pageNum === page
+                      ? 'bg-blue-500 text-white border-blue-500'
+                      : 'hover:bg-gray-50'
+                      }`}
+                  >
+                    {pageNum}
+                  </a>
+                );
+              })}
+
+              {page < totalPages && (
+                <a
+                  href={`?page=${page + 1}`}
+                  className="px-3 py-1 text-sm border rounded hover:bg-gray-50"
+                >
+                  Next
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}

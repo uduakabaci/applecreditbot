@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import { db } from '../index';
 import { orders, type Order, type NewOrder } from './order.sql';
 import type { CreateOrderRequest, UpdateOrderRequest } from '../../types';
@@ -29,7 +29,24 @@ export class OrderDAL {
   }
 
   async getAllOrders(): Promise<Order[]> {
-    return db.select().from(orders);
+    return db.select().from(orders).orderBy(desc(orders.createdAt));
+  }
+
+  async getOrdersPaginated(page: number = 1, limit: number = 10): Promise<{ orders: Order[], total: number }> {
+    const offset = (page - 1) * limit;
+
+    const [ordersData, totalCount] = await Promise.all([
+      db.select().from(orders)
+        .orderBy(desc(orders.createdAt))
+        .limit(limit)
+        .offset(offset),
+      db.select({ count: orders.id }).from(orders).then(result => result.length)
+    ]);
+
+    return {
+      orders: ordersData,
+      total: totalCount
+    };
   }
 
   async updateOrder(id: string, data: UpdateOrderRequest): Promise<Order | null> {
